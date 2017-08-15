@@ -4,4 +4,5 @@
     <string name="calcPrice">Calculate Price</string>
     <string name="partSize">Part Mass (grams):</string>
     <string name="spoolPrice">Spool Price:</string>
+    <string name="zero">0</string>
 </resources>
