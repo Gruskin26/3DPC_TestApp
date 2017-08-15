@@ -4,9 +4,14 @@ import android.icu.math.BigDecimal;
 import android.renderscript.Double2;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 
@@ -16,6 +21,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        EditText prtSzTxt = (EditText) findViewById(R.id.ptMass);
+        EditText splSzTxt = (EditText) findViewById(R.id.spMass);
+
+        TextWatcher massWatcher = new TextWatcher() {
+            boolean ignore = false;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String userInput = editable.toString();
+                if(userInput.length() == 0){
+                    editable.replace(0, editable.length(), "0");
+                }
+                else if (userInput.length() > 1){
+                    if(userInput.charAt(0) == '0'){
+                        editable.delete(0,1);
+                    }
+                }
+
+            }
+        };
+
+        prtSzTxt.addTextChangedListener(massWatcher);
+        splSzTxt.addTextChangedListener(massWatcher);
     }
 
     public long getSpoolPrice() {
@@ -43,5 +81,13 @@ public class MainActivity extends AppCompatActivity {
         getPartSize();
         getSpoolPrice();
         getSpoolSize();
+    }
+
+    public void calculate(){
+        double spoolPrice = getSpoolPrice();
+        double spoolSize = getSpoolSize();
+        double partSize = getPartSize();
+
+
     }
 }
