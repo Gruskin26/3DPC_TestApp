@@ -20,8 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:hint="@string/zero"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"
+        android:text="@string/zero" />
 
     <TextView
         android:id="@+id/spoolPriceHeader"
@@ -44,7 +44,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"
+        android:text="@string/zero" />
 
     <Button
         android:id="@+id/button"
