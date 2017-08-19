@@ -1,20 +1,20 @@
 package com.example.android.a3dpc_testapp;
 
 import android.content.Context;
-import android.icu.math.BigDecimal;
-import android.renderscript.Double2;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Currency;
+import java.util.Locale;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         splSzTxt.addTextChangedListener(massWatcher);
     }
 
+
     /**
      * Grab the price of the spool as entered by the user. Returns a long
      * in order to represent currency in its lowest denomination. This works for US, UK, and
@@ -77,26 +78,28 @@ public class MainActivity extends AppCompatActivity {
         return price;
     }
 
+
     /**
      * Get the mass of the spool in grams
      *
      * @return spoolSize - the mass of the spool
      */
-    public int getSpoolSize(){
+    public double getSpoolSize(){
         EditText spoolSzTxt = (EditText) findViewById(R.id.spMass);
-        int spoolSize = Integer.parseInt(spoolSzTxt.getText().toString());
+        double spoolSize = Double.parseDouble(spoolSzTxt.getText().toString());
         Log.d("v", "Spool Mass: " + spoolSize);
         return spoolSize;
     }
+
 
     /**
      * Get the mass of the user's part in grams
      *
      * @return partSize - the mass of the part to calculate the price of
      */
-    public int getPartSize(){
+    public double getPartSize(){
         EditText partSzTxt = (EditText) findViewById(R.id.ptMass);
-        int partSize = Integer.parseInt(partSzTxt.getText().toString());
+        double partSize = Double.parseDouble(partSzTxt.getText().toString());
         Log.d("v", "Part Mass: " + partSize);
         return partSize;
     }
@@ -109,9 +112,14 @@ public class MainActivity extends AppCompatActivity {
      * @param view Required so that this method can be called with onClick
      */
     public void calculate(View view){
-        double spoolPrice = getSpoolPrice();
+        // Get the information needed for price calculation and displaying
+        TextView priceOutput = (TextView) findViewById(R.id.priceOutputTxt);
+        long spoolPrice = getSpoolPrice();
         double spoolSize = getSpoolSize();
         double partSize = getPartSize();
+        Locale current = Locale.getDefault();
+        Currency curr = Currency.getInstance(current);
+        String currSymbol = curr.getSymbol(current);
         // These two lines hide the keyboard if it is open when the calculate button is pressed.
         // Apparently getWindowToken may throw a Null Pointer Exception, so wrapped in try catch
         // just in case. Should not occur as there are views to have focus, but being safe here.
@@ -125,8 +133,41 @@ public class MainActivity extends AppCompatActivity {
         catch (NullPointerException npe){
             Log.d("e", "Null pointer exception caused by hiding the keyboard");
         }
+        // This is where values are validated and the calculations are performed
+        // TODO Figure out a less verbose way of giving an error toast
+        if (spoolPrice == 0){
+            errorToast("Please enter a spool price");
+        }
+        else if(spoolSize == 0){
+            errorToast("Please enter a spool size");
+        }
+        else if(partSize == 0){
+            errorToast("Please enter a part size");
+        }
+        else {
+            double centsPerGram = (spoolPrice / spoolSize);
+            // While this says cents, it works for any currency where minimal denomination
+            // is 1/100th of the main denomination
+            double partPriceCents = partSize * centsPerGram;
+            double partPriceDollars = partPriceCents / 100.00;
+            // This should format the price for the appropriate currency
+            String prOut = "Price: " + currSymbol +
+                    String.format(current, "%.2f", partPriceDollars);
+            priceOutput.setText(prOut);
+        }
+    }
 
 
+    /**
+     * Makes a toast appear on the bottom of the screen
+     *
+     * @param message - The message to be shown within the toast
+     */
+    public void errorToast (String message){
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
 
+        Toast errorToast = Toast.makeText(context, message, duration);
+        errorToast.show();
     }
 }
