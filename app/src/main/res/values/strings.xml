@@ -5,5 +5,9 @@
     <string name="partSize">Part Mass (grams):</string>
     <string name="spoolPrice">Spool Price:</string>
     <string name="zero">0</string>
-    <string name="priceOutput">Price: </string>
+    <string name="zeroPercent">0</string>
+    <string name="priceOutput">Cost:</string>
+    <string name="markup">Markup Percentage:</string>
+    <string name="mkUpCost">Cost With Markup:</string>
+    <string name="ppg">Price per gram:</string>
 </resources>

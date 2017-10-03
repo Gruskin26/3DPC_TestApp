@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         // Grab the Edit Texts I need to validate
         EditText prtSzTxt = (EditText) findViewById(R.id.ptMass);
         EditText splSzTxt = (EditText) findViewById(R.id.spMass);
+        EditText mkUpTxt = (EditText) findViewById(R.id.mkUp);
 
         // This text watcher is for the part and spool mass fields. It allows them to start with a
         // default value of Zero which is overwritten by user, but if user tries to clear the
@@ -61,6 +62,43 @@ public class MainActivity extends AppCompatActivity {
         // Adding the actual text watchers.
         prtSzTxt.addTextChangedListener(massWatcher);
         splSzTxt.addTextChangedListener(massWatcher);
+        mkUpTxt.addTextChangedListener(massWatcher);
+
+
+//        TextWatcher percentWatcher = new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            // This is the method which changes the text for the user
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                String userInput = editable.toString();
+//                if(userInput.length() == 0){
+//                    editable.replace(0, editable.length(), "0");
+//                }
+//                else if (userInput.length() > 1){
+//                    if(userInput.charAt(0) == '0'){
+//                        editable.delete(0,1);
+//                    }
+//                    //else if(userInput.charAt(0) == '%'){
+//                    //    editable.delete(0,1);
+//                    //}
+//                }
+//                if (userInput.charAt(userInput.length()-1)!= '%'){
+//                    editable.append('%');
+//                }
+//
+//            }
+//        };
+//
+//        mkUpTxt.addTextChangedListener(percentWatcher);
     }
 
 
@@ -104,6 +142,18 @@ public class MainActivity extends AppCompatActivity {
         return partSize;
     }
 
+    /**
+     * Get the markup percentage of the user's part
+     *
+     * @return markup - the percentage markup for the user's part
+     */
+    public double getMarkup(){
+        EditText mkUpTxt = (EditText) findViewById(R.id.mkUp);
+        double markup = Double.parseDouble(mkUpTxt.getText().toString());
+        Log.d("v", "Markup: " + markup+"%");
+        return markup;
+    }
+
 
     /**
      * Calculate the price of the print and display it. This is where the bulk of the work is done
@@ -113,10 +163,13 @@ public class MainActivity extends AppCompatActivity {
      */
     public void calculate(View view){
         // Get the information needed for price calculation and displaying
-        TextView priceOutput = (TextView) findViewById(R.id.priceOutputTxt);
+        TextView priceOutput = (TextView) findViewById(R.id.priceOutputNum);
+        TextView ppgOutput = (TextView) findViewById(R.id.ppgOutputNum);
+        TextView mkUpCostOut = (TextView) findViewById(R.id.mkUpOutputNum);
         long spoolPrice = getSpoolPrice();
         double spoolSize = getSpoolSize();
         double partSize = getPartSize();
+        double markup = getMarkup();
         Locale current = Locale.getDefault();
         Currency curr = Currency.getInstance(current);
         String currSymbol = curr.getSymbol(current);
@@ -148,12 +201,22 @@ public class MainActivity extends AppCompatActivity {
             double centsPerGram = (spoolPrice / spoolSize);
             // While this says cents, it works for any currency where minimal denomination
             // is 1/100th of the main denomination
+            double dollarsPerGram = centsPerGram / 100.00;
             double partPriceCents = partSize * centsPerGram;
             double partPriceDollars = partPriceCents / 100.00;
+            double markupCost = partPriceDollars + (partPriceDollars * (markup/100.00));
             // This should format the price for the appropriate currency
-            String prOut = "Price: " + currSymbol +
+            String prOut = currSymbol +
                     String.format(current, "%.2f", partPriceDollars);
             priceOutput.setText(prOut);
+
+            String markUpOut = currSymbol +
+                    String.format(current, "%.2f", markupCost);
+            mkUpCostOut.setText(markUpOut);
+
+            String ppgOut = currSymbol +
+                    String.format(current, "%.2f", dollarsPerGram);
+            ppgOutput.setText(ppgOut);
         }
     }
 
