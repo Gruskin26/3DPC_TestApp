@@ -12,12 +12,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Currency;
 import java.util.Locale;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 
+
+/**
+ * The MainActivity class for this app so far. Contains all code for the app's activity
+ * which allows for a user to calculate the price, price with markup, and price per gram
+ * of a 3D printed part.
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -64,41 +69,6 @@ public class MainActivity extends AppCompatActivity {
         splSzTxt.addTextChangedListener(massWatcher);
         mkUpTxt.addTextChangedListener(massWatcher);
 
-
-//        TextWatcher percentWatcher = new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            // This is the method which changes the text for the user
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                String userInput = editable.toString();
-//                if(userInput.length() == 0){
-//                    editable.replace(0, editable.length(), "0");
-//                }
-//                else if (userInput.length() > 1){
-//                    if(userInput.charAt(0) == '0'){
-//                        editable.delete(0,1);
-//                    }
-//                    //else if(userInput.charAt(0) == '%'){
-//                    //    editable.delete(0,1);
-//                    //}
-//                }
-//                if (userInput.charAt(userInput.length()-1)!= '%'){
-//                    editable.append('%');
-//                }
-//
-//            }
-//        };
-//
-//        mkUpTxt.addTextChangedListener(percentWatcher);
     }
 
 
@@ -209,11 +179,11 @@ public class MainActivity extends AppCompatActivity {
             String prOut = currSymbol +
                     String.format(current, "%.2f", partPriceDollars);
             priceOutput.setText(prOut);
-
+            // Set the price after markup
             String markUpOut = currSymbol +
                     String.format(current, "%.2f", markupCost);
             mkUpCostOut.setText(markUpOut);
-
+            // Set the price per gram text
             String ppgOut = currSymbol +
                     String.format(current, "%.2f", dollarsPerGram);
             ppgOutput.setText(ppgOut);
@@ -233,4 +203,6 @@ public class MainActivity extends AppCompatActivity {
         Toast errorToast = Toast.makeText(context, message, duration);
         errorToast.show();
     }
+
+
 }
